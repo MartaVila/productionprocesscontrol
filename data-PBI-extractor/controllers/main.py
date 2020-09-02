@@ -36,7 +36,7 @@ class PBIExport(CustomerPortal):
         response = requests.post(json_endpoint, data=payload, headers=headers)
         user_id = response.json()['result']
 
-        print("user_id: ", user_id)
+        return user_id
 
         if user_id:
             search_domain = [['name', 'ilike', 'hector']]
@@ -46,7 +46,7 @@ class PBIExport(CustomerPortal):
             payload3 = get_json_payload("object", "execute_kw", db, user_id, password, 'res.partner', 'read', [res['result']])
             resultado = requests.post(json_endpoint, data=payload3, headers=headers).json()
 
-            print("Resultado", resultado)
+            return resultado
 
         else:
-            print("Failed credentials")
+            return "Failed credentials"
