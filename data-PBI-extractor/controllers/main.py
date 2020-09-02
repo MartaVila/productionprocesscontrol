@@ -8,14 +8,6 @@ import random
 import requests
 
 class PBIExport(CustomerPortal):
-    @http.route(['/PBI/analytic/tickets'], type='http', auth="public", website=False)
+    @http.route(['/PBI/analytic/tickets'], type='http', auth="public", website=True)
     def get_tickets_analytic(self, access_token=None, report_type=None, download=False, **kw):
-        print 'CONNECTION SUCCESSFUL ***'
-        print 'args *** ' , args
-        
-        name = args.get('name', False)
-        email = args.get('email', False)
-        
-        if not name:
-            Response.status = '400 Bad Request'
         return '{"response": "OK"}'
