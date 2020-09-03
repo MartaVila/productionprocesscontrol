@@ -29,6 +29,9 @@ class DataPbiExtractor(models.Model):
     file_name_projects = fields.Char(string='File Name Projects')
     file_binary_projects = fields.Binary(string='Binary File Projects')
 
+    file_name_projects_tasks = fields.Char(string='File Name Projects Tasks')
+    file_binary_projects_tasks = fields.Binary(string='Binary File Projects Tasks')
+
     @api.multi
     def get_informe_horas_vendidas_imputadas_analityc(self):
         # Controlar que es una devolucion: refund_invoice_id controla si tiene cantidades dvueltas (account.invoice)
@@ -402,7 +405,7 @@ class DataPbiExtractor(models.Model):
                 codigo_cliente = project.partner_id.id
 
                 writer.writerow(
-                    [id, codigo_cliente, nombre_cliente, codigo_proyecto, titulo_proyecto])
+                    [id_proyecto, codigo_cliente, nombre_cliente, codigo_proyecto, titulo_proyecto])
 
         files = open(filename, 'rb').read()
         # file = open('export.csv', 'wb')
@@ -410,4 +413,40 @@ class DataPbiExtractor(models.Model):
         content = base64.encodestring(files)
 
         return self.write(
-            {'file_name': filename, 'file_binary': content, 'name': filename, 'model': 'PBI: Proyectos'})
+            {'file_name_projects': filename, 'file_binary_projects': content, 'name': filename, 'model': 'PBI: Proyectos'})
+
+    @api.multi
+    def get_project_tasks(self):
+        now = datetime.now()  # current date and time
+
+        date_time = now.strftime("%m_%d_%Y_%H_%M_%S")
+
+        filename = "project_task_" + date_time + ".csv"
+
+        with open("project_task_" + date_time + ".csv", mode='w') as file:
+            writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            # create a row contains heading of each column
+            # Proyecto y Tarea
+            writer.writerow(
+                ['id', 'CodigoProyecto', 'Descripcion', 'Horas Imputadas', 'Horas Planeadas'])
+
+            PT = self.env['project.task']
+            project_tasks = PT.search([])
+
+            for task in project_tasks:
+                id_tarea = task.id
+                codigo_proyecto = task.project_id.id
+                descripcion = task.description
+                horas_planeadas = task.planned_hours
+                horas_imputadas = task['effective_hours']
+
+                writer.writerow(
+                    [id_tarea, codigo_proyecto, descripcion, horas_imputadas, horas_planeadas])
+
+        files = open(filename, 'rb').read()
+        # file = open('export.csv', 'wb')
+        #
+        content = base64.encodestring(files)
+
+        return self.write(
+            {'file_name_projects_tasks': filename, 'file_binary_projects_tasks': content, 'name': filename, 'model': 'PBI: Proyectos Tareas'})
