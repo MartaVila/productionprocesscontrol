@@ -2,6 +2,7 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 from odoo import models, fields, api, _, exceptions
 from odoo.exceptions import ValidationError
+import html2text
 
 import base64
 import csv
@@ -436,7 +437,7 @@ class DataPbiExtractor(models.Model):
             for task in project_tasks:
                 id_tarea = task.id
                 codigo_proyecto = task.project_id.id
-                descripcion = task.description
+                descripcion = html2text.html2text(task.description)
                 horas_planeadas = task.planned_hours
                 horas_imputadas = task['effective_hours']
 
