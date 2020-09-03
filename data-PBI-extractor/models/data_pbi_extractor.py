@@ -429,7 +429,7 @@ class DataPbiExtractor(models.Model):
             # create a row contains heading of each column
             # Proyecto y Tarea
             writer.writerow(
-                ['id', 'CodigoProyecto', 'Descripcion', 'Horas Imputadas', 'Horas Planeadas'])
+                ['id', 'CodigoProyecto', 'Titulo', 'Horas Imputadas', 'Horas Planeadas'])
 
             PT = self.env['project.task']
             project_tasks = PT.search([])
@@ -437,12 +437,12 @@ class DataPbiExtractor(models.Model):
             for task in project_tasks:
                 id_tarea = task.id
                 codigo_proyecto = task.project_id.id
-                descripcion = html2text.html2text(task.description)
+                titulo = task.name
                 horas_planeadas = task.planned_hours
                 horas_imputadas = task['effective_hours']
 
                 writer.writerow(
-                    [id_tarea, codigo_proyecto, descripcion, horas_imputadas, horas_planeadas])
+                    [id_tarea, codigo_proyecto, titulo, horas_imputadas, horas_planeadas])
 
         files = open(filename, 'rb').read()
         # file = open('export.csv', 'wb')
