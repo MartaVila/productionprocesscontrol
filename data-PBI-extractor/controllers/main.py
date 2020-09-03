@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import json
 import random
 import requests
@@ -22,15 +21,4 @@ class PBIExport(CustomerPortal):
         raw_data = user.read()
         json_data = json.dumps(raw_data, default=date_utils.json_default)
         return json_data
-=======
-from odoo import http, _
-from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
-from odoo.addons.payment.controllers.portal import PaymentProcessing
-from odoo.exceptions import AccessError, MissingError
-from odoo.http import request
 
-class PBIExport(CustomerPortal):
-    @http.route(['/PBI/analytic/getProjects'], type='http', auth="public", website=True)
-    def get_tickets_analytic(self, access_token=None, report_type=None, download=False, **kw):
-        return "SI"
->>>>>>> master
