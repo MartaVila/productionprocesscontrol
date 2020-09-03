@@ -12,17 +12,16 @@ class AccountInvoiceLine(models.Model):
 
     @api.model
     def create(self, vals):
-        str = "SUB"
-        origen = vals['origin']
         project_id = False
 
-        if (origen):
-            if (str not in origen):
-                project_id = False
-            if (str in origen):
+        try:
+            if (vals['project_id']):
                 project_id = vals['project_id']
-        else:
-            raise exceptions.UserError(_("No se detecta origen"))
+        except:
+            project_id = False
+
+        # else:
+        # raise exceptions.UserError(_("No se detecta origen"))
 
         invoice_lines = super(AccountInvoiceLine, self).create(vals)
         invoice_lines.write({'project_id': project_id})

@@ -103,7 +103,8 @@ class DataPbiExtractor(models.Model):
                             order_state = sale_line['order_id'].state
 
                             # Comprobamos si tiene factura
-                            if self.tiene_factura(order_name) == 1:
+                            #if self.tiene_factura(order_name) == 1:
+                            if sale_line['order_id'].invoice_status == 'invoiced' or sale_line['order_id'].invoice_status == 'upselling':
 
                                 # Comprobamos que la factura no es devolucion y el pedido no esta cancelado
                                 # posteriormente, añadimos las horas al total para contabilizarlas contra las imputadas
@@ -204,7 +205,7 @@ class DataPbiExtractor(models.Model):
 
     def descartar_facturas_devolucion(self, nombre_pedido_venta):
         AI = self.env['account.invoice']
-
+        #Este tambien hay que cambiarlo por un IN o derivado
         facturas = AI.search([('origin', '=', nombre_pedido_venta)])
 
         if facturas:
@@ -220,11 +221,15 @@ class DataPbiExtractor(models.Model):
 
     def tiene_factura(self, nombre_pedido_venta):
         AI = self.env['account.invoice']
-        facturas = AI.search([('origin', '=', nombre_pedido_venta)])
-
+        facturas = AI.search([])
         if facturas:
-            return 1
-
+            for factura in facturas:
+                origenes = factura['origin']
+                origenes_array = origenes.split(',')
+                if origenes_array:
+                    for origen in origenes_array:
+                        if origen == nombre_pedido_venta:
+                            return 1
         return 0
 
     def _get_name_tipo_proyecto(self, idproyecto):
