@@ -26,6 +26,9 @@ class DataPbiExtractor(models.Model):
     file_name_project_horas_vendidas_vs_realizadas = fields.Char(string='File Name Project Horas vs Vendidas')
     file_binary_project_horas_vendidas_vs_realizadas = fields.Binary(string='Binary File Project Horas vs Vendidas')
 
+    file_name_projects = fields.Char(string='File Name Projects')
+    file_binary_projects = fields.Binary(string='Binary File Projects')
+
     @api.multi
     def get_informe_horas_vendidas_imputadas_analityc(self):
         # Controlar que es una devolucion: refund_invoice_id controla si tiene cantidades dvueltas (account.invoice)
@@ -372,3 +375,39 @@ class DataPbiExtractor(models.Model):
         return self.write(
             {'file_name_tickets_sistemas': filename, 'file_binary_tickets_sistemas': content, 'name': filename,
              'model': 'PBI: Tickets Sistemas'})
+
+    @api.multi
+    def get_project_project(self):
+        now = datetime.now()  # current date and time
+
+        date_time = now.strftime("%m_%d_%Y_%H_%M_%S")
+
+        filename = "project_project_" + date_time + ".csv"
+
+        with open("project_project_" + date_time + ".csv", mode='w') as file:
+            writer = csv.writer(file, delimiter=';', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+            # create a row contains heading of each column
+            # Proyecto y Tarea
+            writer.writerow(
+                ['id', 'CodigoCliente', 'NombreCliente', 'CodigoProyecto', 'TituloProyecto'])
+
+            PP = self.env['project.project']
+            projects = PP.search([])
+
+            for project in projects:
+                id_proyecto = project.id
+                codigo_proyecto = project.id
+                titulo_proyecto = project.name
+                nombre_cliente = project.partner_id.name
+                codigo_cliente = project.partner_id.id
+
+                writer.writerow(
+                    [id, codigo_cliente, nombre_cliente, codigo_proyecto, titulo_proyecto])
+
+        files = open(filename, 'rb').read()
+        # file = open('export.csv', 'wb')
+        #
+        content = base64.encodestring(files)
+
+        return self.write(
+            {'file_name': filename, 'file_binary': content, 'name': filename, 'model': 'PBI: Proyectos'})
